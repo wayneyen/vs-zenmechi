@@ -90,7 +90,7 @@
           <view class="bar bar-protein">
             <view
               class="bar-value"
-              :style="{ height: proteinHeight }"
+              :style="{ height: 0 }"
               :animation="proteinBarAnimation"
             ></view>
           </view>
@@ -100,7 +100,7 @@
           <view class="bar bar-carbs">
             <view
               class="bar-value"
-              :style="{ height: carbsHeight }"
+              :style="{ height: 0 }"
               :animation="carbsBarAnimation"
             ></view>
           </view>
@@ -109,7 +109,7 @@
           <view class="bar bar-fat">
             <view
               class="bar-value"
-              :style="{ height: fatHeight }"
+              :style="{ height: 0 }"
               :animation="fatBarAnimation"
             ></view>
           </view>
@@ -239,6 +239,7 @@ export default {
       currentType: "", // 选中的格子
 
       // 柱动画
+      animation: {},
       proteinBarAnimation: {},
       carbsBarAnimation: {},
       fatBarAnimation: {},
@@ -312,8 +313,6 @@ export default {
     this.profile = getApp().globalData.profile
     this.meals_count = getApp().globalData.profile.meals_count
 
-    console.log(this.profile)
-
     uni.hideLoading()
 
     if (options.first == 1) {
@@ -325,8 +324,8 @@ export default {
     this.getRecordTotal()
 
     // 三柱動畫
-    var animation = uni.createAnimation({
-      duration: 10000,
+    const animation = uni.createAnimation({
+      duration: 1000,
       timingFunction: "ease",
       delay: 100,
     })
