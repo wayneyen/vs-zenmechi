@@ -1,4 +1,5 @@
 # vs-zenmechi
+# 怎么吃小程序源代码 (完成度 85%)
 
 ## Project setup
 ```
@@ -7,13 +8,10 @@ yarn install
 
 ### Compiles and hot-reloads for development
 ```
-yarn serve
+yarn dev:mp-weixin
 ```
 
 ### Compiles and minifies for production
 ```
-yarn build
+yarn build:mp-weixin
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
