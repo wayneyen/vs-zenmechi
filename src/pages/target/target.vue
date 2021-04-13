@@ -49,7 +49,7 @@
     <view class="d-center">
       <view class="save d-center" @click="saveProfile">保存</view>
     </view>
-    
+
     <uni-popup ref="popup" type="center">
       <view class="first">
           <image src="/static/modal/warning.png" mode="aspectFill" class="tips"></image>
@@ -75,7 +75,7 @@
   import config from '@/common/config.js'
   import number from '@/common/number.js'
   import RadioBox from '@/components/radio-box.vue'
-  
+
   export default {
     data() {
       return {
@@ -104,11 +104,11 @@
       this.gender = options.gender ?? getApp().globalData.profile.gender,
       this.birthYear = options.birthYear ?? getApp().globalData.profile.birthYear,
       this.tall =options.tall ?? getApp().globalData.profile.tall,
-      
+
       this.weight = getApp().globalData.profile.weight
       this.activity = getApp().globalData.profile.activity
       this.target = getApp().globalData.profile.target
-      
+
       this.activityWidth = this.activityWidth * getApp().globalData.zoom
     },
     methods: {
@@ -121,14 +121,14 @@
       },
       moveActivity (e) {
           this.activityX = e.touches[0].pageX - e.currentTarget.offsetLeft
-  
+
           let activity = this.activityX / this.activityWidth
           activity = Math.floor(activity)
           if (activity < 1) activity = 1
           if (activity > 9) activity = 9
-  
+
           this.activity = activity
-          
+
           this.activityValue = config.activities[activity - 1]
           this.activityDesc = config.getActivityDesc(activity)
       },
@@ -145,7 +145,7 @@
           this.$refs.popup.open()
           return false
         }
-        
+
         const isNumeric = !isNaN(parseFloat(this.weight)) && isFinite(this.weight)
           if (!isNumeric) {
            this.tipText = '体重请输入数字！！'

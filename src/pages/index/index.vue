@@ -138,7 +138,7 @@
     </view>
 
     <!-- 第一次进入 (中間跳出) -->
-    <uni-popup ref="popup" type="center">
+    <uni-popup ref="popup" type="center" style="z-index: 3000;">
       <view class="first">
         <image
           src="/static/modal/tips.png"
@@ -166,6 +166,7 @@
             :items="mealsCountItems"
             :active="meals_count"
             @select="selectMealsCount"
+            :theme="1"
             :width="'360rpx'"
             :height="'80rpx'"
             :color1="'#ffffff'"

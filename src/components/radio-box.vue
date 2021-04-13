@@ -1,14 +1,10 @@
 <template>
-  <view id="radio" class="radio" :style="[radioStyle]">
+  <view id="radio" class="radio" :class="radioClass">
     <block v-for="(item, index) in items" :key="index">
       <button
         :id="'id-' + item.value"
-        :class="item.value == active ? 'radio-button active' : 'radio-button'"
-        :style="{
-          'border-radius': innerRadius,
-          color: item.value == active ? acolor : dcolor,
-          'background-color': item.value == active ? dcolor : acolor
-        }"
+        class="radio-button"
+        :class="item.value == active ? buttonClass + ' active' : buttonClass"
         :data-value="item.value"
         @click="onTap"
       >
@@ -28,13 +24,8 @@
 export default {
   data() {
     return {
-      animationPosition: {
-        width: 0,
-        height: 0,
-        left: 0,
-        top: 0,
-      },
-      radioLeft: 0,
+      radioClass: 'radio-0',
+      buttonClass: 'button-0'
     }
   },
   props: {
@@ -42,56 +33,17 @@ export default {
       type: Array,
       default: [],
     },
-    width: {
-      type: String,
-      default: "690rpx",
+    theme: {
+      type: Number,
+      default: 0,
     },
-    height: {
-      type: String,
-      default: "140rpx",
-    },
-    color: {
-      type: String,
-      default: "#F2F7F7",
-    },
-    bg: {
-      type: String,
-      default: "#FFFFFF",
-    },
-    acolor: {
-      type: String,
-      default: "#FFFFFF",
-    },
-    dcolor: {
-      type: String,
-      default: "#F2F7F7",
-    },
-    radius: {
-      type: String,
-      default: "74rpx",
-    },
-    innerRadius: {
-      type: String,
-      default: "74rpx",
-    },
-    margin: {
-      type: String,
-      default: "30rpx",
-    },
-    active: null,
+    active: null
   },
-  computed: {
-    radioStyle() {
-      return {
-        margin: this.margin,
-        "background-color": this.bg,
-        width: this.width,
-        height: this.height,
-        "border-radius": this.radius,
-      }
-    },
-
-    // color: {{ item.value == active ? acolor : dcolor }}; background-color: {{ item.value == active ? dcolor : acolor }};"
+  created() {
+    if (this.theme == 1) {
+      this.radioClass = 'radio-1'
+      this.buttonClass = 'button-1'
+    }
   },
   methods: {
     onTap(e) {
@@ -133,13 +85,6 @@ export default {
   font-size: 28upx;
   z-index: 100;
   padding: 0;
-  border-radius: 74px;
-  color: #6f7c87;
-}
-
-.active {
-  color: #6f7c87;
-  background-color: #f2f7f7;
 }
 
 .radio-button::after {
@@ -159,4 +104,54 @@ export default {
   position: absolute;
   z-index: 50;
 }
+
+/* 自訂樣式 0 */
+.radio-0 {
+  margin: 30rpx;
+  background-color: #FFFFFF;
+  width: 690rpx;
+  height: 140rpx;
+  border-radius: 74rpx;
+}
+.button-0 {
+  border-radius: 74rpx;
+  color: #6f7c87;
+}
+.button-0.active {
+  background-color: #F2F7F7;
+}
+
+/* 自訂樣式 0 */
+.radio-0 {
+  margin: 30rpx;
+  background-color: #FFFFFF;
+  width: 690rpx;
+  height: 140rpx;
+  border-radius: 74rpx;
+}
+.button-0 {
+  border-radius: 74rpx;
+  color: #6f7c87;
+}
+.button-0.active {
+  background-color: #F2F7F7;
+}
+
+/* 自訂樣式 1 */
+.radio-1 {
+  margin: 30rpx;
+  background-color: #6F7C87;
+  width: 360rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+}
+.button-1 {
+  border-radius: 40rpx;
+  color: #FFFFFF;
+}
+.button-1.active {
+  background-color: #F2F7F7;
+  color: #6f7c87;
+}
+
 </style>
