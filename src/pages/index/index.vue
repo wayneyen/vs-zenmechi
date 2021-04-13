@@ -233,7 +233,6 @@ export default {
       meals_count: 3,
       mealsCountItems: config.mealsCountItems,
       mealsDesc: config.mealsDesc,
-      mealsCountChanged: false, // 餐数是否已改变
       profile: null,
 
       currentIdx: -1, // 选中的格子
@@ -274,13 +273,9 @@ export default {
       }
     },
   },
-  watch: {
-    meals_count() {
-      this.mealsCountChanged = true
-      this.mealsCountChangedTo = this.meals_count
-    },
-  },
   async onLoad(options) {
+    uni.hideTabBar({})
+
     /*** get openid ***/
     uni.showLoading({})
     const openid = uni.getStorageSync("openid")
@@ -304,8 +299,19 @@ export default {
         url: `${config.api}/api/openid/${login[1].code}`,
       })
 
-      uni.setStorageSync("openid", profile[1].data.openid)
       getApp().globalData.openid = profile[1].data.openid
+
+      if (!profile[1].data.profile) {
+        console.log('new')
+        // 新用戶，引導至基本資料
+        uni.navigateTo({
+          url: '/pages/profile/profile'
+        })
+
+        return false
+      }
+
+      uni.setStorageSync("openid", profile[1].data.openid)
       getApp().globalData.profile = profile[1].data.profile
     }
 
@@ -315,6 +321,9 @@ export default {
     this.meals_count = getApp().globalData.profile.meals_count
 
     uni.hideLoading()
+    uni.showTabBar({
+      animation: true
+    })
 
     if (options.first == 1) {
       this.$refs.popup.open()
@@ -342,6 +351,7 @@ export default {
   },
 
   methods: {
+    // 獲取當天總筆數
     getRecordTotal() {
       if (!getApp().globalData.profile) return 0
 
@@ -360,25 +370,32 @@ export default {
         },
       })
     },
+
+    // 開吃
     beginEat() {
       uni.navigateTo({
         url: "/pages/begin/begin",
       })
     },
+
+    // 前往詳細記錄
     goDetail() {
       uni.navigateTo({
         url: "/pages/detail/detail",
       })
     },
+
+    // 關閉總熱量提示
     closeFirst() {
       this.$refs.popup.close()
     },
-    closeTopModal(e) {
+
+    // 關閉參數選擇視窗
+    closeTopModal() {
       this.topModalShow = false
 
-      // 用餐數變更
-      if (this.mealsCountChanged) {
-        // 更新用户数据
+      if (this.meals_count !== getApp().globalData.profile.meals_count) {
+        // 參數改變 更新用户数据
         wx.request({
           url: `${config.api}/api/profile/updateMealsCount`,
           data: {
@@ -391,16 +408,16 @@ export default {
           },
         })
 
-        this.alertMealsCount = true
-        this.mealsCountChanged = false
+        getApp().globalData.profile.meals_count = this.meals_count
         this.$refs.popup.open()
       }
     },
+
     // 设置餐数
     selectMealsCount(e) {
-      getApp().globalData.profile.meals_count = e.active
       this.meals_count = e.active
     },
+
     // 点选格子
     clickTd(e) {
       this.currentIdx = e.currentTarget.dataset.idx

@@ -81,15 +81,15 @@
       return {
         activityX: 0,
         activityWidth: 64,
-        activityValue: config.activities[4],
-        activityDesc: config.getActivityDesc(5),
+        activityValue: config.activities[1],
+        activityDesc: config.getActivityDesc(1),
         targetItems: config.targetItems,
         tipText: '',
         gender: 2,
         birthYear: 1990,
         tall: 180,
         weight: 50,
-        activity: 0, // 活動係數
+        activity: 1, // 活動係數
         target: 2
       };
     },
@@ -101,29 +101,26 @@
     },
     onLoad(options) {
       // check if from profile
-      this.gender = options.gender ?? getApp().globalData.profile.gender,
-      this.birthYear = options.birthYear ?? getApp().globalData.profile.birthYear,
-      this.tall =options.tall ?? getApp().globalData.profile.tall,
+      if (getApp().globalData.profile) {
+        this.gender = options.gender ?? getApp().globalData.profile.gender,
+        this.birthYear = options.birthYear ?? getApp().globalData.profile.birthYear,
+        this.tall =options.tall ?? getApp().globalData.profile.tall,
 
-      this.weight = getApp().globalData.profile.weight
-      this.activity = getApp().globalData.profile.activity
-      this.target = getApp().globalData.profile.target
-
+        this.weight = getApp().globalData.profile.weight
+        this.activity = getApp().globalData.profile.activity
+        this.target = getApp().globalData.profile.target
+      }
       this.activityWidth = this.activityWidth * getApp().globalData.zoom
     },
     methods: {
       getWeight (e) {
         this.weight = e.detail.value
-        // this.weight = number.roundN(e.detail.value, 1)
-        // if (isNaN(this.weight)) this.weight = ''
-        // console.log(this.weight)
-        // console.log(e)
       },
       moveActivity (e) {
           this.activityX = e.touches[0].pageX - e.currentTarget.offsetLeft
-
           let activity = this.activityX / this.activityWidth
           activity = Math.floor(activity)
+
           if (activity < 1) activity = 1
           if (activity > 9) activity = 9
 

@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       gender: 2,
-      birthYear: 1970,
+      birthYear: 2000,
       tall: 180,
       genderItems: config.genderItems,
     }
@@ -59,9 +59,11 @@ export default {
     },
   },
   onLoad() {
-    this.gender = getApp().globalData.profile.gender
-    this.birthYear = getApp().globalData.profile.birthYear
-    this.tall = getApp().globalData.profile.tall
+    if (getApp().globalData.profile) {
+      this.gender = getApp().globalData.profile.gender
+      this.birthYear = getApp().globalData.profile.birthYear
+      this.tall = getApp().globalData.profile.tall
+    }
   },
   methods: {
     selectGender(e) {
