@@ -11,7 +11,7 @@
       </view>
 
       <uni-swipe-action>
-        <uni-swipe-action-item v-for="(record, recordIndex) in records" :key="record.id" 
+        <uni-swipe-action-item v-for="(record, recordIndex) in records" :key="record.id"
           v-if="record.meals[mealsCount] == index + 1"
           :right-options="swipeOptions" @click="onClick">
           <view class="food" @click="editRecord(record.id)">
@@ -19,13 +19,13 @@
               {{ record.name }}
               <image class="food-icon" :src="record.type == 1 ? `/static/type${record.food.type1}.png` : ''"></image>
             </view>
-            
+
             <view class="food-protein">{{ Math.round(record.protein) }}</view>
             <view class="food-carbs">{{ Math.round(record.carbs) }}</view>
             <view class="food-fat">{{ Math.round(record.fat) }}</view>
             <view class="food-kcal">{{ Math.round(record.kcal) }}</view>
             <view class="food-weight">x{{ Math.round(record.weight) }}g</view>
-            
+
             <image class="food-arrow" src="../../static/arrow-r.png"></image>
           </view>
         </uni-swipe-action-item>
@@ -86,14 +86,14 @@
           }
         })
       },
-      
+
       addRecord(index, e) {
         const eatTimes = string.str2times(config.mealTimes[getApp().globalData.profile.meals_count][index])
         uni.navigateTo({
           url: `../begin/begin?hour=${eatTimes[0]}&minute=${eatTimes[1]}`
         })
       },
-      
+
       editRecord(id, e) {
         uni.navigateTo({
           url: `../record/record?editID=` + id
@@ -140,7 +140,7 @@
       }
     }
   }
-  
+
   .food {
     height: 88upx;
     border-bottom: 2upx solid $chi-extragray;
@@ -148,20 +148,20 @@
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    
+
     .food-title {
       color: $chi-gray;
       font-size: 28upx;
       padding-left: 30upx;
       flex: 1;
-      
+
       .food-icon {
         width: 20upx;
         height: 20upx;
         margin-left: 16upx;
       }
     }
-              
+
     .food-protein {
       width: 60upx;
       color: $chi-protein;
@@ -192,7 +192,7 @@
       font-size: 32upx;
       text-align: right;
     }
-    
+
     .food-arrow {
       width: 40upx;
       height: 40upx;

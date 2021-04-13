@@ -209,10 +209,10 @@
         this.food = food[1].data
       }
 
-      this.food.protein = parseInt(this.food.protein)
-      this.food.carbs = parseInt(this.food.carbs)
-      this.food.fat = parseInt(this.food.fat)
-      this.food.kcal = parseInt(this.food.kcal)
+      this.food.protein = Math.round(Number(this.food.protein))
+      this.food.carbs = Math.round(Number(this.food.carbs))
+      this.food.fat = Math.round(Number(this.food.fat))
+      this.food.kcal = Math.round(Number(this.food.kcal))
       this.food.kj = this.food.kcal * 4.1868
       this.food.kj = this.food.kj.toFixed(0)
       if (isNaN(this.food.kj)) {

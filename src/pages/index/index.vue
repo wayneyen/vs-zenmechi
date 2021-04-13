@@ -225,7 +225,7 @@ import RadioBox from "@/components/radio-box.vue"
 export default {
   data() {
     return {
-      recordTotal: 0,
+      records: [],
       target: getApp().globalData.profile
         ? getApp().globalData.profile.target
         : 0,
@@ -272,6 +272,9 @@ export default {
         return ""
       }
     },
+    recordTotal() {
+      return this.records.length
+    }
   },
   async onLoad(options) {
     uni.hideTabBar({})
@@ -315,7 +318,7 @@ export default {
       getApp().globalData.profile = profile[1].data.profile
     }
 
-    this.getRecordTotal()
+    this.getRecords()
 
     this.profile = getApp().globalData.profile
     this.meals_count = getApp().globalData.profile.meals_count
@@ -351,24 +354,24 @@ export default {
   },
 
   methods: {
-    // 獲取當天總筆數
-    getRecordTotal() {
-      if (!getApp().globalData.profile) return 0
+    // 獲取當天資料
+    getRecords() {
+      if (!getApp().globalData.profile) return []
 
       const today = new Date().toJSON().slice(0, 10)
 
       uni.request({
-        url: `${config.api}/api/record/total`,
+        url: `${config.api}/api/record/detail`,
         data: {
           profile_id: getApp().globalData.profile.id,
-          date: today,
+          date: today
         },
-        method: "POST",
+        method: 'POST',
         success: (res) => {
-          // console.log(res)
-          this.recordTotal = res.data
-        },
+          this.records = res.data
+        }
       })
+
     },
 
     // 開吃
