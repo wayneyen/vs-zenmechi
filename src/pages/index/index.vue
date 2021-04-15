@@ -29,9 +29,9 @@
     <!-- 圖表 -->
     <view class="tbody">
       <!-- 重量 (格子) -->
-      <block v-for="(item, index) in mealsDesc[meals_count]" :key="index">
+      <block v-for="(item, index) in nutritionTable" :key="index">
         <view class="td">
-          <view class="d-center td-meal">{{ item }}</view>
+          <view class="d-center td-meal">{{ item.title }}</view>
           <view
             class="d-center td-unit"
             :data-type="'protein'"
@@ -43,9 +43,10 @@
               v-show="currentType === 'protein' && currentIdx === index"
             >
               <view style="font-size: 24rpx">重量-g</view>
-              <view style="font-size: 68rpx">28</view>
+              <view style="font-size: 68rpx">{{ item.eat.proteinG }}</view>
             </view>
           </view>
+
           <view
             class="d-center td-unit"
             :data-type="'carbs'"
@@ -57,7 +58,7 @@
               v-show="currentType === 'carbs' && currentIdx === index"
             >
               <view style="font-size: 24rpx">重量-g</view>
-              <view style="font-size: 68rpx">28</view>
+              <view style="font-size: 68rpx">{{ item.eat.carbsG }}</view>
             </view>
           </view>
           <view
@@ -71,11 +72,13 @@
               v-show="currentType === 'fat' && currentIdx === index"
             >
               <view style="font-size: 24rpx">重量-g</view>
-              <view style="font-size: 68rpx">28</view>
+              <view style="font-size: 68rpx">{{ item.eat.fatG }}</view>
             </view>
           </view>
           <view class="d-center td-unit td-kcal" v-show="!hideKcalCircle">
-            {{ kcalPercent[index] }}+
+            {{ Math.abs(Math.round(item.eat.kcal - item.target.kcal)) }}
+            <text v-if="item.eat.kcal >= item.target.kcal">+</text>
+            <text v-else>-</text>
             <view class="td-circle d-center">
               <!-- <canvas type="2d" style="width: 100rpx; height: 100rpx;" canvas-id="kcal{{ index }}"></canvas> -->
             </view>
@@ -249,7 +252,89 @@ export default {
     SwiperBox,
     RadioBox,
   },
+
   computed: {
+    nutritionTable() {
+      if (!this.profile) return []
+      if (!this.records) return []
+
+      const table = []
+
+      // 每餐資料
+      for (let i = 0; i < this.meals_count; i++) {
+        const targetP = Number(this.profile.eat[this.meals_count][i]['protein'])
+        const targetC = Number(this.profile.eat[this.meals_count][i]['carbs'])
+        const targetF = Number(this.profile.eat[this.meals_count][i]['fat'])
+
+        // 每餐吃的總和
+        const eat = {
+          proteinG: 0,
+          carbsG: 0,
+          fatG: 0,
+          kcal: 0
+        }
+        this.records.forEach(record => {
+          if (record.meals[this.meals_count] == i + 1) {
+            eat.proteinG += Number(record.protein)
+            eat.carbsG += Number(record.carbs)
+            eat.fatG += Number(record.fat)
+            eat.kcal += record.protein * 4 + record.carbs * 4 + record.fat * 9
+          }
+        })
+
+        const tr = {
+          // 標題
+          title: this.profile.eat[this.meals_count][i]['title'],
+
+          // 每餐目標
+          target: {
+            proteinG: targetP / 4,
+            carbsG: targetC / 4,
+            fatG: targetF / 9,
+            kcal: targetP + targetC + targetF
+          },
+
+          // 每餐實際吃的
+          eat: eat
+        }
+
+        table[i] = tr
+      }
+
+      // console.log(table)
+
+      return table
+    },
+    nutritionTotal() {
+      const table = {
+        eat: {
+          proteinG: 0,
+          carbsG: 0,
+          fatG: 0,
+          kcal: 0
+        },
+        target: {
+          proteinG: 0,
+          carbsG: 0,
+          fatG: 0,
+          kcal: 0
+        }
+      }
+
+      this.nutritionTable.forEach(tr => {
+        table.eat.proteinG += Number(tr.eat.proteinG)
+        table.eat.carbsG += Number(tr.eat.carbsG)
+        table.eat.fatG += Number(tr.eat.fatG)
+        table.eat.kcal += Number(tr.eat.kcal)
+
+        table.target.proteinG += Number(tr.target.proteinG)
+        table.target.carbsG += Number(tr.target.carbsG)
+        table.target.fatG += Number(tr.target.fatG)
+        table.target.kcal += Number(tr.target.kcal)
+      })
+
+      return table
+    },
     targetDesc() {
       let targetDesc = ""
       if (this.target === 1) {
@@ -276,8 +361,49 @@ export default {
       return this.records.length
     }
   },
+
+  watch: {
+    profile() {
+      // Profile 載入後才獲取紀錄
+      this.getRecords()
+    },
+    records() {
+      // 紀錄改變後跑三柱動畫
+      if (this.nutritionTotal.eat.proteinG && this.nutritionTotal.target.proteinG) {
+        let proteinHeight = this.nutritionTotal.eat.proteinG / this.nutritionTotal.target.proteinG * 100
+        if (proteinHeight > 100)  proteinHeight = 100
+        const animation = this.animation
+        animation.height(proteinHeight + '%').step()
+        this.proteinBarAnimation = animation.export()
+      }
+
+      if (this.nutritionTotal.eat.carbsG && this.nutritionTotal.target.carbsG) {
+        let carbsHeight = this.nutritionTotal.eat.carbsG / this.nutritionTotal.target.carbsG * 100
+        if (carbsHeight > 100)  carbsHeight = 100
+        const animation = this.animation
+        animation.height(carbsHeight + '%').step()
+        this.carbsBarAnimation = animation.export()
+      }
+
+      if (this.nutritionTotal.eat.fatG && this.nutritionTotal.target.fatG) {
+        let fatHeight = this.nutritionTotal.eat.fatG / this.nutritionTotal.target.fatG * 100
+        if (fatHeight > 100)  fatHeight = 100
+        const animation = this.animation
+        animation.height(fatHeight + '%').step()
+        this.fatBarAnimation = animation.export()
+      }
+    }
+  },
+
   async onLoad(options) {
     uni.hideTabBar({})
+
+    // 初始化柱動畫
+    this.animation = uni.createAnimation({
+      duration: 1000,
+      timingFunction: "ease",
+      delay: 100,
+    })
 
     /*** get openid ***/
     uni.showLoading({})
@@ -305,7 +431,6 @@ export default {
       getApp().globalData.openid = profile[1].data.openid
 
       if (!profile[1].data.profile) {
-        console.log('new')
         // 新用戶，引導至基本資料
         uni.navigateTo({
           url: '/pages/profile/profile'
@@ -317,8 +442,6 @@ export default {
       uni.setStorageSync("openid", profile[1].data.openid)
       getApp().globalData.profile = profile[1].data.profile
     }
-
-    this.getRecords()
 
     this.profile = getApp().globalData.profile
     this.meals_count = getApp().globalData.profile.meals_count
@@ -334,23 +457,7 @@ export default {
   },
 
   onShow() {
-    this.getRecordTotal()
-
-    // 三柱動畫
-    const animation = uni.createAnimation({
-      duration: 1000,
-      timingFunction: "ease",
-      delay: 100,
-    })
-
-    animation.height("100%").step()
-    this.proteinBarAnimation = animation.export()
-
-    animation.height("35%").step()
-    this.carbsBarAnimation = animation.export()
-
-    animation.height("65%").step()
-    this.fatBarAnimation = animation.export()
+    this.getRecords()
   },
 
   methods: {

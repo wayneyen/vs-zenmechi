@@ -153,8 +153,12 @@
     components: {
       SwiperBox
     },
+
+    /**
+     * @param {{ id: string; editID: string; type: string; hour: any; minute: any; }} options
+     */
     async onLoad(options) {
-      uni.showLoading()
+      uni.showLoading({})
       if (options.id) this.id = parseInt(options.id)
       if (options.editID) this.editID = parseInt(options.editID)
       if (options.type) this.type = parseInt(options.type)
@@ -247,13 +251,11 @@
       },
 
       eatContinue() {
-        uni.navigateBack({
-
-        })
+        uni.navigateBack({})
       },
 
       formSubmit(e) {
-        const datas = e.detail.value
+        let datas = e.detail.value
         let type1 = 0
 
         // 来源 id
@@ -267,7 +269,6 @@
           e.detail.value.carbs = this.food.carbs
           e.detail.value.fat = this.food.fat
           e.detail.value.kcal = this.food.kcal
-
           type1 = this.food.type1
         }
 
@@ -287,18 +288,21 @@
           }
         }
         this.submiting = true
+
+        console.log(datas)
         uni.request({
           url: `${config.api}/api/record/`,
           data: datas,
           method: 'POST',
           success: (res) => {
             // 增加最近吃的 storage
-            const id = (type1 == 1) ? this.id : res.data.id
+            const id = (type1 == 1) ? this.food.id : res.data.id
             const eat = {
               'name': datas.name,
               'type1': type1,
               'id': id,
             }
+
             let recents = uni.getStorageSync('recents')
             if (!recents) recents = []
             recents = recents.filter(v => v.name !== eat.name)
